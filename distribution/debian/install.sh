@@ -1,40 +1,34 @@
 #!/bin/bash
-### Description: Sonarr .NET Debian install
+### Sonarr Pterodactyl Install Script
 
-scriptversion="1.0.5"
+scriptversion="1.0.8"
 scriptdate="2025-04-23"
 
 set -euo pipefail
 
 echo "Running Sonarr Install Script - Version [$scriptversion] as of [$scriptdate]"
 
-# Ensure we are running as root
-if [ "$EUID" -ne 0 ]; then
-    echo "ERROR: This script must be run as root."
-    exit 1
-fi
-
 app="sonarr"
-app_prereq="curl sqlite3 wget"
 branch="main"
-
-# Set installation and data directories
 installdir="/home/container/sonarr"
 datadir="/home/container/sonarr/data"
 app_bin="Sonarr"  # Correct binary name
 
-# Create installation directory and navigate to it
-echo "Creating installation directory: $installdir..."
+# Ensure required directories exist
+echo "Creating Sonarr installation directory..."
 mkdir -p "$installdir"
-cd "$installdir"
+mkdir -p "$datadir"
 
-# Install required packages
-echo "Installing dependencies..."
-apt update && apt install -y $app_prereq
+# Install `wget` manually in writable location since `apt update` is blocked
+echo "Installing wget..."
+cd /tmp
+curl -o wget.deb http://ftp.us.debian.org/debian/pool/main/w/wget/wget_1.21.3-1_amd64.deb
+dpkg -i wget.deb
+cd "$installdir"
 
 # Determine download URL based on architecture
 ARCH=$(dpkg --print-architecture)
-dlbase="https://services.sonarr.tv/v1/download/main/latest?version=4&os=linux"
+dlbase="https://services.sonarr.tv/v1/download/$branch/latest?version=4&os=linux"
 case "$ARCH" in
     "amd64") DLURL="${dlbase}&arch=x64" ;;
     "armhf") DLURL="${dlbase}&arch=arm" ;;
@@ -47,27 +41,31 @@ esac
 
 echo "Download URL: $DLURL"
 
-# Remove previous tarball if present
-echo "Cleaning up old files..."
-rm -f "Sonarr.*.tar.gz"
-
-# Download the Sonarr tarball
+# Download and extract Sonarr
 echo "Downloading Sonarr..."
 wget --content-disposition "$DLURL"
-
-# Extract Sonarr files
-echo "Extracting Sonarr files..."
+echo "Extracting Sonarr..."
 tar -xvzf "Sonarr.*.tar.gz" --strip-components=1 -C "$installdir"
 rm -f "Sonarr.*.tar.gz"
+
+# Create Sonarr user to avoid permission errors
+echo "Creating Sonarr user..."
+useradd -m -s /usr/sbin/nologin sonarr || echo "User already exists."
+groupadd media || true
+usermod -aG media sonarr
 
 # Apply correct permissions
 echo "Setting permissions for $installdir..."
 chmod -R 775 "$installdir"
 chown -R sonarr:media "$installdir"
 
-# Ensure the data directory exists
-echo "Ensuring data directory exists..."
-mkdir -p "$datadir"
+# Ensure logs directory exists
+mkdir -p /home/container/logs
+touch /home/container/logs/sonarr.log
 
-echo "Installation complete. Sonarr is ready to start via Pterodactyl."
+# Start Sonarr after installation
+echo "Starting Sonarr..."
+exec /home/container/sonarr/Sonarr --nobrowser --data="$datadir" --port=8989 &
+
+echo "Installation complete. Sonarr is running. You can access it at http://<your-ip>:8989"
 exit 0
