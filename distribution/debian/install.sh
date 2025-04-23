@@ -55,7 +55,7 @@ echo "Removing previous tarballs..."
 echo "Downloading Sonarr tarball..."
 wget --content-disposition "$DLURL"
 echo "Extracting Sonarr files..."
-tar -xvzf "${app^}".*.tar.gz --strip-components=1
+tar -xvzf "${app^}".*.tar.gz 
 #rm -f "${app^}".*.tar.gz
 
 # Change permissions
@@ -67,7 +67,7 @@ echo "Installation complete. Sonarr is ready to start manually."
 
 # Start the Application
 echo "Starting Sonarr manually..."
-"$installdir/$app_bin" --nobrowser --data="$datadir"
+"$installdir/$app_bin" -v --nobrowser --data="$datadir"
 echo "Application started successfully. You can browse to http://<your-ip>:$app_port for the GUI."
 
 # Exit
