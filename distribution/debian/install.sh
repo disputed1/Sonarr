@@ -1,7 +1,7 @@
 #!/bin/bash
 ### Sonarr Pterodactyl Install Script
 
-scriptversion="1.0.8"
+scriptversion="1.0.9"
 scriptdate="2025-04-23"
 
 set -euo pipefail
@@ -19,12 +19,13 @@ echo "Creating Sonarr installation directory..."
 mkdir -p "$installdir"
 mkdir -p "$datadir"
 
-# Install `wget` manually in writable location since `apt update` is blocked
-echo "Installing wget..."
-cd /tmp
-curl -o wget.deb http://ftp.us.debian.org/debian/pool/main/w/wget/wget_1.21.3-1_amd64.deb
-dpkg -i wget.deb
-cd "$installdir"
+# Install `curl` manually if missing
+if ! command -v curl &> /dev/null; then
+    echo "Installing curl manually..."
+    cd /tmp
+    wget http://ftp.us.debian.org/debian/pool/main/c/curl/curl_7.88.1-1_amd64.deb
+    dpkg -i curl_7.88.1-1_amd64.deb
+fi
 
 # Determine download URL based on architecture
 ARCH=$(dpkg --print-architecture)
