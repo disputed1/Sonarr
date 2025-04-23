@@ -46,7 +46,7 @@ echo "Download URL: $DLURL"
 echo "Downloading Sonarr..."
 wget --content-disposition "$DLURL"
 echo "Extracting Sonarr..."
-tar -xvzf "Sonarr.*.tar.gz" --strip-components=1 -C "$installdir"
+tar -xvzf Sonarr.*.linux-x64.tar.gz --strip-components=1 -C /home/container/sonarr
 rm -f "Sonarr.*.tar.gz"
 
 # Create Sonarr user to avoid permission errors
