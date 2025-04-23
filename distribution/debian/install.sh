@@ -19,14 +19,6 @@ echo "Creating Sonarr installation directory..."
 mkdir -p "$installdir"
 mkdir -p "$datadir"
 
-# Install `curl` manually if missing
-if ! command -v curl &> /dev/null; then
-    echo "Installing curl manually..."
-    cd /tmp
-    wget http://ftp.us.debian.org/debian/pool/main/c/curl/curl_7.88.1-1_amd64.deb
-    dpkg -i curl_7.88.1-1_amd64.deb
-fi
-
 # Determine download URL based on architecture
 ARCH=$(dpkg --print-architecture)
 dlbase="https://services.sonarr.tv/v1/download/$branch/latest?version=4&os=linux"
@@ -47,7 +39,6 @@ echo "Downloading Sonarr..."
 wget --content-disposition "$DLURL"
 echo "Extracting Sonarr..."
 tar -xvzf "$(ls Sonarr*.tar.gz)" --strip-components=1 -C /home/container/sonarr
-rm -f "Sonarr.*.tar.gz"
 
 # Create Sonarr user to avoid permission errors
 echo "Creating Sonarr user..."
