@@ -55,7 +55,7 @@ echo "Removing previous tarballs..."
 echo "Downloading Sonarr tarball..."
 wget --content-disposition "$DLURL"
 echo "Extracting Sonarr files..."
-tar -xvzf "${app^}".*.tar.gz 
+tar -xvzf "${app^}".*.tar.gz --strip-components=1 -C /opt/sonarr 
 #rm -f "${app^}".*.tar.gz
 
 # Change permissions
