@@ -20,8 +20,8 @@ app_prereq="curl sqlite3 wget"
 branch="main"
 
 # Constants
-installdir="/app"              # Install Location
-datadir="/app/data"            # AppData directory
+installdir="/home/container/sonarr"              # Install Location
+datadir="/home/container/sonarr/data"            # AppData directory
 app_bin=${app^}                # Binary Name of the app
 
 # Change directory to install location
