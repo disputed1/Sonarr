@@ -26,7 +26,10 @@ app_bin=${app^}                # Binary Name of the app
 
 # Change directory to install location
 echo "Changing directory to $installdir..."
-mkdir -p "$installdir"
+mkdir "$installdir" || {
+    echo "I can't create directory $2" >&2
+    exit 8
+}
 cd "$installdir"
 
 # Install prerequisite packages
