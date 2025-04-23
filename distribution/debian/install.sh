@@ -57,7 +57,7 @@ touch /home/container/logs/sonarr.log
 
 # Start Sonarr after installation
 echo "Starting Sonarr..."
-exec /home/container/sonarr/Sonarr --nobrowser --data="$datadir" --port=8989 &
+exec /home/container/sonarr/Sonarr/Sonarr --nobrowser --data="$datadir" --port=8989 &
 
 echo "Installation complete. Sonarr is running. You can access it at http://<your-ip>:8989"
 exit 0
